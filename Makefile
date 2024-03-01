@@ -13,25 +13,17 @@ down:
 	docker compose -f $(DOCKER_COMPOSE_FILE) down
 clean:
 	@if [ ! -z "$$(docker ps -aq)" ]; then \
-		docker stop $$(docker ps -aq) > /dev/null; \
-		docker rm $$(docker ps -aq) > /dev/null; \
+		docker stop $$(docker ps -aq); \
+		docker rm $$(docker ps -aq); \
 	fi
 	@if [ ! -z "$$(docker images -aq)" ]; then \
-		docker rmi $$(docker images -aq) > /dev/null; \
+		docker rmi $$(docker images -aq); \
 	fi	
 	@if [ ! -z "$$(docker volume ls -q)" ]; then \
-		docker volume rm $$(docker volume ls -q) > /dev/null; \
+		docker volume rm $$(docker volume ls -q); \
 	fi
 	@echo "$(GREEN)Deleted all docker containers, volumes, and images succesfully$(END)"
-memory:
-	output_clean=$$(docker ps -aq)
-#	output_clean="$output_clean + $$(docker images -aq)"
-#	output_clean+=$$(docker volume ls -q)
-	echo "output: $$output_clean"
-test:
-	if [ -z "$$(docker ps -aq)" ]; then \
-		echo "empty"; \
-	fi
 
+re: clean all
 
 .PHONY: all down clean
