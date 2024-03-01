@@ -1,0 +1,14 @@
+services:
+  alpine:
+    build: requirements/mariadb/
+    stdin_open: true
+    tty: true
+    volumes:
+      - test_data:/var
+volumes:
+  test_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./ferran
