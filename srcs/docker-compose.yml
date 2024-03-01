@@ -1,8 +1,6 @@
 services:
-  alpine:
+  mariadb:
     build: requirements/mariadb/
-    stdin_open: true
-    tty: true
     volumes:
       - test_data:/var
 volumes:

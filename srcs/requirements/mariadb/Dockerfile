@@ -1,3 +1,3 @@
-FROM alpine:latest
+FROM debian:oldstable
 
-CMD ["echo", "holaaaaa from alpineeee, las temperaturas en alpine estan muy bien!"]
+RUN apt-get -y update
