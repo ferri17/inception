@@ -1,12 +1,25 @@
 services:
-  mariadb:
-    build: requirements/mariadb/
+  nginx:
+    container_name: nginx
+    build: requirements/nginx/
+    image: nginx_image
     volumes:
-      - test_data:/var
+      - test_nginx:/var/www/html
+    ports:
+      - "80:80"
 volumes:
-  test_data:
+  test_nginx:
     driver: local
     driver_opts:
-      type: none
+      device: "/home/${USER}/Documents/wordpress_files"
       o: bind
-      device: ./ferran
+      type: none
+      #volumes:
+      #- test_data:/var
+        #volumes:
+        #test_data:
+        #driver: local
+        #driver_opts:
+        #type: none
+        #o: bind
+        #device: ./ferran
