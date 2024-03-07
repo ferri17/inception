@@ -7,8 +7,8 @@ DOCKER_COMPOSE_FILE = srcs/docker-compose.yml
 
 all:
 	@echo "$(GREEN)Building and starting all containers: $(END)"
-	mkdir -p /home/$(USER)/Documents/wordpress_files
-	docker compose -f $(DOCKER_COMPOSE_FILE) up --build
+	mkdir -p /home/$(USER)/Data/wordpress_files
+	docker compose -f $(DOCKER_COMPOSE_FILE) up --detach --build
 
 down:
 	docker compose -f $(DOCKER_COMPOSE_FILE) down
@@ -23,7 +23,7 @@ clean:
 	@if [ ! -z "$$(docker volume ls -q)" ]; then \
 		docker volume rm $$(docker volume ls -q); \
 	fi
-	rm -rf /home/$(USER)/Documents/wordpress_files
+	rm -rf /home/$(USER)/Data/wordpress_files
 	@echo "$(GREEN)Deleted all docker containers, volumes, and images succesfully$(END)"
 
 re: clean all

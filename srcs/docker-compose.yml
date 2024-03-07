@@ -7,11 +7,12 @@ services:
       - test_nginx:/var/www/html
     ports:
       - "80:80"
+    restart: always
 volumes:
   test_nginx:
     driver: local
     driver_opts:
-      device: "/home/${USER}/Documents/wordpress_files"
+      device: "/home/fbosch/Data/wordpress_files"
       o: bind
       type: none
       #volumes:
