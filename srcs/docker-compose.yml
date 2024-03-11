@@ -2,25 +2,25 @@ services:
   nginx:
     container_name: nginx
     build: requirements/nginx/
-    image: nginx_image
+    image: nginx
     volumes:
-      - test_nginx:/var/www/html
+      - wordpress_files:/var/www/html
     ports:
       - "443:443"
     restart: always
+  wordpress:
+    container_name: wordpress
+    build: requirements/wordpress
+    image: wordpress
+    volumes:
+      - wordpress_files:/var/www/html
+    env_file:
+      - .env
+    restart: always
 volumes:
-  test_nginx:
+  wordpress_files:
     driver: local
     driver_opts:
       device: "/home/fbosch/Data/wordpress_files"
       o: bind
       type: none
-      #volumes:
-      #- test_data:/var
-        #volumes:
-        #test_data:
-        #driver: local
-        #driver_opts:
-        #type: none
-        #o: bind
-        #device: ./ferran

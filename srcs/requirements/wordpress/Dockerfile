@@ -1,0 +1,16 @@
+FROM debian:11.9
+
+EXPOSE 9000
+
+RUN apt-get update -y
+RUN apt-get install -y curl php7.4 php7.4-fpm
+
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+RUN chmod +x wp-cli.phar && mv wp-cli.phar /usr/local/bin/wp
+
+COPY ./tools/wordpress_start.sh /etc
+RUN chmod a+x /etc/wordpress_start.sh
+
+WORKDIR /var/www/html
+
+ENTRYPOINT ["/etc/wordpress_start.sh"]
