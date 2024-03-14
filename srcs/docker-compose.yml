@@ -1,26 +1,62 @@
 services:
+
   nginx:
     container_name: nginx
     build: requirements/nginx/
     image: nginx
     volumes:
-      - wordpress_files:/var/www/html
+      - wordpress_data:/var/www/html
+    networks:
+      - fbosch_network
     ports:
       - "443:443"
     restart: always
+
   wordpress:
+    depends_on:
+      - mariadb
     container_name: wordpress
     build: requirements/wordpress
     image: wordpress
     volumes:
-      - wordpress_files:/var/www/html
+      - wordpress_data:/var/www/html
+    networks:
+      - fbosch_network
     env_file:
       - .env
     restart: always
+
+  mariadb:
+    container_name: mariadb
+    build: requirements/mariadb
+    image: mariadb
+    volumes:
+      - mariadb_data:/etc/temporal_directory
+    networks:
+      - fbosch_network
+    env_file:
+      - .env
+    restart: always
+
+
 volumes:
-  wordpress_files:
+
+  wordpress_data:
     driver: local
     driver_opts:
-      device: "/home/fbosch/Data/wordpress_files"
+      device: "/home/${USER}/Data/wordpress"
       o: bind
       type: none
+  
+  mariadb_data:
+    driver: local
+    driver_opts:
+      device: "/home/${USER}/Data/mariadb"
+      o: bind
+      type: none
+
+
+networks:
+  fbosch_network:
+    name: fbosch_network
+    driver: bridge
