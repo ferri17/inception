@@ -1,6 +1,8 @@
 services:
 
   nginx:
+    depends_on:
+      - wordpress
     container_name: nginx
     build: requirements/nginx/
     image: nginx
