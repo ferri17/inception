@@ -14,8 +14,6 @@ then
 	wp user create $WP_USER $WP_EMAIL --role=author --user_pass=$WP_PASS --allow-root
 	#wp theme install twentysixteen --activate --allow-root
 fi
-sleep 100000
-#wp --info
 
-#while [ -f /etc/wordpress_start.sh ]; do
-#done
+echo "Executing php-fpm7.4 -F..."
+/usr/sbin/php-fpm7.4 -F

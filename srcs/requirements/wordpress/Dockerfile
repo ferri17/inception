@@ -8,6 +8,9 @@ RUN apt-get update -y && \
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
 	chmod +x wp-cli.phar && mv wp-cli.phar /usr/local/bin/wp
 
+RUN mkdir -p /run/php
+RUN chmod 755 /run/php
+
 COPY ./tools/wordpress_start.sh /etc
 RUN chmod a+x /etc/wordpress_start.sh
 
