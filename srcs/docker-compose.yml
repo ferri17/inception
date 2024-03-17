@@ -33,7 +33,7 @@ services:
     build: requirements/mariadb
     image: mariadb
     volumes:
-      - mariadb_data:/etc/temporal_directory
+      - mariadb_data:/var/lib/mysql
     networks:
       - fbosch_network
     env_file:
