@@ -3,9 +3,6 @@
 #Start the service if it is not running
 service mariadb start
 
-echo "TEEEEST"
-ls /var/lib/mysql
-echo "TEEEEST"
 #Configuration of mysql database
 
 #(enter) no root password yet
@@ -36,10 +33,7 @@ then
 	mysql -e "GRANT ALL ON $DB_NAME.* TO '$DB_USER'@'%' IDENTIFIED BY '$DB_PASS' WITH GRANT OPTION;"
 	mysql -e "FLUSH PRIVILEGES;"
 	echo "User created in db successfully"
-else
-	cd /var/lib/mysql/$DB_NAME
-	pwd
 fi
 
-#service mariadb stop
-#mysqld
+service mariadb stop
+mysqld
