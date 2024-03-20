@@ -19,28 +19,125 @@
 <img width="900" alt="Screenshot 2024-03-20 at 01 05 55" src="https://github.com/ferri17/inception/assets/19575860/d9e46f87-fa55-4a17-936c-8f856f660de2">
 
 
-**MiniRT (raytracer)** is the second **computer graphics** project in 42 school common core. The program must read .rt files (more on the file format below) and render simple scenes with camera, lights, planes, spheres, cylinders and cones (this raytracer is not triangle based so all objects are defined by it's matematical formulas).
+The system follows these rules:
 
-<h3>What is supported?</h3>
 <ul>
-  <li>Camera setting</li>
-  <li>4 basic objects: Plane, Sphere, Cylinder, Cone</li>
-  <li>Multiple lights, including ambient light</li>
-  <li>Phong reflection model: Ambient + Diffuse + Specular</li>
-  <li>Checkerboard pattern</li>
-  <li>Bitmap diffuse textures</li>
-  <li>Normal map textures</li>
+  <li>A Docker container contains NGINX with TLSv1.3.</li>
+  <li>A Docker container contains WordPress + php-fpm.</li>
+  <li>A Docker container contains MariaDB.</li>
+  <li>2 volumes: 1 stores website files (wordpress), the other one stores the database(mariaDB).</li>
+  <li>A Docker network comunicates all the containers between each other.</li>
+  <li>The system can only be accessed through port 443 (https) on nginx container.</li>
 </ul>
 
-<!-- GALLERY -->
-## Gallery
+## Makefile
+I created a makefile to quickly build and clean the setup. It allows to build(make), stop the services(make down), and fully clean - docker + local storage - (make clean).
 
-<img width="891" alt="Screenshot 2024-02-28 at 01 20 12" src="https://github.com/ferri17/miniRT/assets/19575860/032cc2bd-befa-4969-80ac-45bd8dd6f720">
-<img width="895" alt="Screenshot 2024-02-28 at 01 20 37" src="https://github.com/ferri17/miniRT/assets/19575860/637b8e90-0e1b-4d81-86a3-65c47b2a33f4">
-<img width="894" alt="Screenshot 2024-02-28 at 01 21 38" src="https://github.com/ferri17/miniRT/assets/19575860/0a14ef7d-b497-40ed-a0b0-89ef66849cb3">
+```Makefile
+GREEN=\033[1;32m
+RED=\033[1;31m
+BLUE=\033[1;34m
+END=\033[0m
+
+DOCKER_COMPOSE_FILE = srcs/docker-compose.yml
+
+all:
+	@echo "$(GREEN)Building and starting all containers: $(END)"
+	mkdir -p /home/$(USER)/data/wordpress
+	mkdir -p /home/$(USER)/data/mariadb
+	docker compose -f $(DOCKER_COMPOSE_FILE) up --detach --build
+
+down:
+	docker compose -f $(DOCKER_COMPOSE_FILE) down
+clean:
+	@if [ ! -z "$$(docker ps -aq)" ]; then \
+		docker stop $$(docker ps -aq); \
+		docker rm $$(docker ps -aq); \
+	fi
+	@if [ ! -z "$$(docker images -aq)" ]; then \
+		docker rmi $$(docker images -aq); \
+	fi	
+	@if [ ! -z "$$(docker volume ls -q)" ]; then \
+		docker volume rm $$(docker volume ls -q); \
+	fi
+	@if [ ! -z "$$(docker network ls -q --filter type=custom)" ]; then \
+		docker network rm $$(docker network ls -q --filter type=custom); \
+	fi
+	rm -rf /home/$(USER)/data/wordpress
+	rm -rf /home/$(USER)/data/mariadb
+	@echo "$(GREEN)Deleted all docker containers, volumes, networks, and images succesfully$(END)"
+
+re: clean all
+
+.PHONY: all down clean
+```
+## docker-compose.yml
+```YAML
+services:
+
+  nginx:
+    depends_on:
+      - wordpress
+    container_name: nginx
+    build: requirements/nginx/
+    image: nginx
+    volumes:
+      - wordpress_data:/var/www/html
+    networks:
+      - fbosch_network
+    ports:
+      - "443:443"
+    restart: always
+
+  wordpress:
+    depends_on:
+      - mariadb
+    container_name: wordpress
+    build: requirements/wordpress
+    image: wordpress
+    volumes:
+      - wordpress_data:/var/www/html
+    networks:
+      - fbosch_network
+    env_file:
+      - .env
+    restart: always
+
+  mariadb:
+    container_name: mariadb
+    build: requirements/mariadb
+    image: mariadb
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - fbosch_network
+    env_file:
+      - .env
+    restart: always
 
 
+volumes:
 
+  wordpress_data:
+    driver: local
+    driver_opts:
+      device: "/home/${USER}/data/wordpress"
+      o: bind
+      type: none
+  
+  mariadb_data:
+    driver: local
+    driver_opts:
+      device: "/home/${USER}/data/mariadb"
+      o: bind
+      type: none
+
+
+networks:
+  fbosch_network:
+    name: fbosch_network
+    driver: bridge
+```
 <!---
 Here is an example of a simple scene:
 ```
