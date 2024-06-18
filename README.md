@@ -9,7 +9,7 @@
 <h3 align="center">Inception 42 school project</h3>
 
   <p align="center">
-    This project consists in setting a small docker infrastructure composed of 3 services, a local wordpress installation, a Mysql(mariaDB) database to support the website, and to finish an nginx server to manage requests to the website.
+    This project consists in setting up a docker infrastructure composed of 3 services, a local wordpress installation, a Mysql(mariaDB) database to support the website, and to finish an nginx server to manage requests to the website.
     <br />
   </p>
 </div>
